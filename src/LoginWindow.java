@@ -5,9 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class GUI implements ActionListener {
-
-    int counts = 0;
+public class LoginWindow implements ActionListener {
 
     private JLabel label;
     private JButton button;
@@ -15,17 +13,15 @@ public class GUI implements ActionListener {
     private JPanel panel;
     private JTextField username;
 
-    public GUI() {
+    public LoginWindow() {
         frame = new JFrame();
-
 
         username = new JTextField();
         username.setBounds(50,100, 200,30);
 
         label = new JLabel("What Should I Call You ");
-        button = new JButton("enter");
+        button = new JButton("login");
         button.addActionListener(this);
-
 
         panel = new JPanel();
         panel.setBorder(BorderFactory.createEmptyBorder(30, 30, 10, 30));
@@ -34,17 +30,16 @@ public class GUI implements ActionListener {
         panel.add(username);
         panel.add(button);
 
-
-
         frame.add(panel, BorderLayout.CENTER);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setTitle("The GUI");
+        frame.setTitle("Login Window");
         frame.pack();
         frame.setVisible(true);
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
 
     public static void main(String[] args) {
-        new GUI();
+        new LoginWindow();
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -52,6 +47,9 @@ public class GUI implements ActionListener {
         if (user.length() < 2) {
             JOptionPane.showMessageDialog(null, "Username should be more than 2 characters");
             username.setText("");
+        } else {
+            frame.dispose();
+            Dashboard dashboard = new Dashboard(user);
         }
         System.out.println("Username entered: " + user);
     }
