@@ -13,19 +13,28 @@ public class GUI implements ActionListener {
     private JButton button;
     private JFrame frame;
     private JPanel panel;
+    private JTextField username;
 
     public GUI() {
         frame = new JFrame();
 
-        button = new JButton("Click");
+
+        username = new JTextField();
+        username.setBounds(50,100, 200,30);
+
+        label = new JLabel("What Should I Call You ");
+        button = new JButton("enter");
         button.addActionListener(this);
-        label = new JLabel("Number of Clicks:");
+
 
         panel = new JPanel();
         panel.setBorder(BorderFactory.createEmptyBorder(30, 30, 10, 30));
         panel.setLayout(new GridLayout(0, 1));
-        panel.add(button);
         panel.add(label);
+        panel.add(username);
+        panel.add(button);
+
+
 
         frame.add(panel, BorderLayout.CENTER);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -39,7 +48,11 @@ public class GUI implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-        counts++;
-        label.setText("Number of clicks: " + counts);
+        String user = username.getText();
+        if (user.length() < 2) {
+            JOptionPane.showMessageDialog(null, "Username should be more than 2 characters");
+            username.setText("");
+        }
+        System.out.println("Username entered: " + user);
     }
 }
