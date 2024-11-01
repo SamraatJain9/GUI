@@ -44,8 +44,9 @@ public class LoginWindow implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
         String user = username.getText();
-        if (user.length() < 2) {
-            JOptionPane.showMessageDialog(null, "Username should be more than 2 characters");
+        boolean isValid = user.matches("^\\S{3,15}$");
+        if (!isValid) {
+            JOptionPane.showMessageDialog(null, "Username should be more than 3-15 characters with no whitespaces");
             username.setText("");
         } else {
             frame.dispose();
