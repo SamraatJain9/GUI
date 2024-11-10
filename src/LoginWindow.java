@@ -1,11 +1,13 @@
 package src;
 
+import javax.crypto.SecretKey;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class LoginWindow implements ActionListener {
 
@@ -54,7 +56,7 @@ public class LoginWindow implements ActionListener {
 
         int result = JOptionPane.showConfirmDialog(frame, setupPanel, "Setup", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         if (result == JOptionPane.OK_OPTION) {
-            int selectedCount = Integer.parseInt((String) dropDown.getSelectedItem());
+            int selectedCount = Integer.parseInt((String) Objects.requireNonNull(dropDown.getSelectedItem()));
             showSymbolInputWindow(selectedCount);
         }
     }
@@ -79,15 +81,33 @@ public class LoginWindow implements ActionListener {
 
         JButton confirmButton = new JButton("Confirm");
         confirmButton.addActionListener(new ActionListener() {
+
+
             public void actionPerformed(ActionEvent e) {
-                // Process each symbol and its corresponding JTextField from our lists
-                for (int i = 0; i < inputFields.size(); i++) {
-                    String symbol = symbolsList.get(i); // Get the symbol
-                    String inputPhrase = inputFields.get(i).getText(); // Get the user-entered phrase
-                    System.out.println(symbol + " : " + inputPhrase);
+                try {
+                    // Generate a SecretKey once for all encryptions in this session
+                    SecretKey secretKey = Encrypt.generateSecretKey();
+
+                    // Process each symbol and its corresponding JTextField from our lists
+                    for (int i = 0; i < inputFields.size(); i++) {
+                        String symbol = symbolsList.get(i); // Get the symbol
+                        String inputPhrase = inputFields.get(i).getText(); // Get the user-entered phrase
+
+                        // Encrypt the input phrase using the encrypt method
+                        String encryptedPhrase = Encrypt.encrypt(inputPhrase, secretKey);
+                        String decryptedPhrase = Encrypt.decrypt(encryptedPhrase, secretKey);
+
+                        // Print the symbol and encrypted phrase
+                        System.out.println(symbol + " : " + encryptedPhrase + " : " + decryptedPhrase);
+                    }
+
+                    symbolFrame.dispose(); // Close the frame after confirmation
+                } catch (Exception ex) {
+                    ex.fillInStackTrace(); // Print any encryption errors
                 }
-                symbolFrame.dispose(); // Close the frame after confirmation
             }
+
+
         });
         symbolFrame.add(new JLabel()); // Empty space for layout alignment
         symbolFrame.add(confirmButton);
