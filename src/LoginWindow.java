@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LoginWindow implements ActionListener {
 
@@ -58,17 +60,19 @@ public class LoginWindow implements ActionListener {
     }
 
     private void showSymbolInputWindow(int count) {
-        // Create a new JFrame for displaying symbols and inputs
         JFrame symbolFrame = new JFrame("Enter Phrases for Symbols");
-        symbolFrame.setLayout(new GridLayout(count + 1, 3)); // +1 for the confirm button row
+        symbolFrame.setLayout(new GridLayout(count + 1, 2)); // +1 for the confirm button row
         symbolFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         Symbols symbolsGenerator = new Symbols();
+        List<String> symbolsList = symbolsGenerator.getUniqueSymbols(count);
+        List<JTextField> inputFields = new ArrayList<>(); // Store only JTextFields for later retrieval
 
-        for (int i = 0; i < count; i++) {
-            String symbol = symbolsGenerator.getRandomSymbol();
+        for (String symbol : symbolsList) {
             JLabel symbolLabel = new JLabel(symbol);
             JTextField inputField = new JTextField();
+            inputFields.add(inputField); // Track the input field in our list
+
             symbolFrame.add(symbolLabel);
             symbolFrame.add(inputField);
         }
@@ -76,17 +80,18 @@ public class LoginWindow implements ActionListener {
         JButton confirmButton = new JButton("Confirm");
         confirmButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // Handle the input data here
-                for (int i = 0; i < count; i++) {
-                    JTextField inputField = (JTextField) symbolFrame.getContentPane().getComponent(i * 3 + 1); // Accessing input fields
-                    String inputPhrase = inputField.getText();
-                    System.out.println("Entered phrase for symbol " + (i + 1) + ": " + inputPhrase);
+                // Process each symbol and its corresponding JTextField from our lists
+                for (int i = 0; i < inputFields.size(); i++) {
+                    String symbol = symbolsList.get(i); // Get the symbol
+                    String inputPhrase = inputFields.get(i).getText(); // Get the user-entered phrase
+                    System.out.println(symbol + " : " + inputPhrase);
                 }
                 symbolFrame.dispose(); // Close the frame after confirmation
             }
         });
-        symbolFrame.add(new JLabel()); // Empty space for layout
+        symbolFrame.add(new JLabel()); // Empty space for layout alignment
         symbolFrame.add(confirmButton);
+
         symbolFrame.setSize(600, 400);
         symbolFrame.setVisible(true);
     }

@@ -1,6 +1,6 @@
 package src;
 
-import java.util.Random;
+import java.util.*;
 
 public class Symbols {
     Random random = new Random();
@@ -12,16 +12,10 @@ public class Symbols {
             "~\\~/\\~"
     };
 
-    private String[] phrases = {
-            "tracks in the snow",
-            "mountain shadows",
-            "wings in the wind",
-            "ring of fire",
-            "waves on the shore"
-    };
 
-    public String getRandomSymbol() {
-        int symbol_id = random.nextInt(symbols.length);
-        return symbols[symbol_id];
+    public List<String> getUniqueSymbols(int count) {
+        List<String> symbolsList = new ArrayList<>(List.of(symbols));
+        Collections.shuffle(symbolsList);
+        return symbolsList.subList(0, Math.min(count, symbolsList.size()));
     }
 }
