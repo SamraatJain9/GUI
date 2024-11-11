@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class LoginWindow implements ActionListener {
+public class LoginWindow {
 
     private JLabel label;
     private JButton button;
@@ -21,13 +21,16 @@ public class LoginWindow implements ActionListener {
 
         label = new JLabel("Hello There");
         JButton setupButton = new JButton("Start Setup");
-        setupButton.addActionListener(this);
+        JButton loginButton = new JButton("Login");
+        setupButton.addActionListener(e -> setupLogin());
+        loginButton.addActionListener(e -> loginUser());
 
         panel = new JPanel();
         panel.setBorder(BorderFactory.createEmptyBorder(30, 30, 10, 30));
         panel.setLayout(new GridLayout(0, 1));
         panel.add(label);
         panel.add(setupButton);
+        panel.add(loginButton);
 
         frame.add(panel, BorderLayout.CENTER);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -41,7 +44,8 @@ public class LoginWindow implements ActionListener {
         new LoginWindow();
     }
 
-    public void actionPerformed(ActionEvent e) {
+    // Refactored method name from actionPerformed to setupLogin
+    public void setupLogin() {
         JPanel setupPanel = new JPanel(new GridLayout(0, 1));
 
         setupPanel.add(new JLabel("Setup Window"));
@@ -82,12 +86,10 @@ public class LoginWindow implements ActionListener {
         JButton confirmButton = new JButton("Confirm");
         confirmButton.addActionListener(new ActionListener() {
 
-
             public void actionPerformed(ActionEvent e) {
                 try {
                     // Generate a SecretKey once for all encryptions in this session
                     SecretKey secretKey = Encrypt.generateSecretKey();
-
                     List<SymbolEntry> symbolEntries = new ArrayList<>();
 
                     // Process each symbol and its corresponding JTextField from our lists
@@ -98,7 +100,7 @@ public class LoginWindow implements ActionListener {
                         // Encrypt the input phrase using the encrypt method
                         String encryptedPhrase = Encrypt.encrypt(inputPhrase, secretKey);
 
-                        symbolEntries.add(new SymbolEntry(symbol, encryptedPhrase));
+                        symbolEntries.add(new SymbolEntry(symbol, encryptedPhrase, secretKey));
 
                         String decryptedPhrase = Encrypt.decrypt(encryptedPhrase, secretKey);
 
@@ -116,8 +118,6 @@ public class LoginWindow implements ActionListener {
                     ex.fillInStackTrace(); // Print any encryption errors
                 }
             }
-
-
         });
         symbolFrame.add(new JLabel()); // Empty space for layout alignment
         symbolFrame.add(confirmButton);
@@ -125,4 +125,69 @@ public class LoginWindow implements ActionListener {
         symbolFrame.setSize(600, 400);
         symbolFrame.setVisible(true);
     }
+
+    public void loginUser() {
+        try {
+            // Read symbol entries from file
+            List<SymbolEntry> symbolEntries = BinaryFile.readFromFile("src/on_disk/secure.bin");
+
+            // Check if the list is empty or null
+            if (symbolEntries == null || symbolEntries.isEmpty()) {
+                JOptionPane.showMessageDialog(frame, "No Symbols available. Please complete setup first.");
+                return;
+            }
+
+            // Get a random symbol entry from the list
+            SymbolEntry entry = symbolEntries.get((int) (Math.random() * symbolEntries.size()));
+            String symbol = entry.getSymbol();
+            String correctEncryptedPhrase = entry.getEncryptedPhrase();
+            SecretKey correctKey = entry.getKey(); // Ensure your SymbolEntry class can store the key
+
+            // Create and display the login frame
+            SwingUtilities.invokeLater(() -> {
+                try {
+                    JFrame loginFrame = new JFrame("Login - Enter Phrase");
+                    loginFrame.setLayout(new GridLayout(2, 1));
+
+                    JLabel symbolLabel = new JLabel(symbol, SwingConstants.CENTER);
+                    JTextField phraseField = new JTextField();
+                    JButton submitButton = new JButton("Submit");
+
+                    submitButton.addActionListener(e -> {
+                        try {
+                            String userInput = phraseField.getText();
+
+                            // Decrypt the phrase using the correct key
+                            String decryptedPhrase = Encrypt.decrypt(correctEncryptedPhrase, correctKey);
+
+                            if (userInput.equals(decryptedPhrase)) {
+                                System.out.println("User Login Success");
+                                new Dashboard("User");
+                                loginFrame.dispose(); // Close the login window
+                            } else {
+                                JOptionPane.showMessageDialog(loginFrame, "Incorrect phrase. Please re-try.");
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    });
+
+                    loginFrame.add(symbolLabel);
+                    loginFrame.add(phraseField);
+                    loginFrame.add(submitButton);
+
+                    loginFrame.setSize(600, 400);
+                    loginFrame.setVisible(true);
+                    loginFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+
+                } catch (Exception ex) {
+                    ex.printStackTrace(); // Catch any issues with window creation
+                }
+            });
+
+        } catch (Exception ex) {
+            ex.printStackTrace(); // Catch any other exceptions
+        }
+    }
+
 }
