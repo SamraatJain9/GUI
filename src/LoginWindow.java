@@ -88,6 +88,8 @@ public class LoginWindow implements ActionListener {
                     // Generate a SecretKey once for all encryptions in this session
                     SecretKey secretKey = Encrypt.generateSecretKey();
 
+                    List<SymbolEntry> symbolEntries = new ArrayList<>();
+
                     // Process each symbol and its corresponding JTextField from our lists
                     for (int i = 0; i < inputFields.size(); i++) {
                         String symbol = symbolsList.get(i); // Get the symbol
@@ -95,11 +97,19 @@ public class LoginWindow implements ActionListener {
 
                         // Encrypt the input phrase using the encrypt method
                         String encryptedPhrase = Encrypt.encrypt(inputPhrase, secretKey);
+
+                        symbolEntries.add(new SymbolEntry(symbol, encryptedPhrase));
+
                         String decryptedPhrase = Encrypt.decrypt(encryptedPhrase, secretKey);
 
                         // Print the symbol and encrypted phrase
                         System.out.println(symbol + " : " + encryptedPhrase + " : " + decryptedPhrase);
                     }
+
+                    BinaryFile.writeToFile(symbolEntries, "src/on_disk/secure.bin");
+
+                    System.out.println("Reading from file: ");
+                    BinaryFile.readFromFile("src/on_disk/secure.bin");
 
                     symbolFrame.dispose(); // Close the frame after confirmation
                 } catch (Exception ex) {

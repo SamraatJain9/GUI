@@ -1,15 +1,16 @@
 package src;
 
 import java.io.*;
+import java.util.List;
 
 public class BinaryFile {
 
-    public static void writeToFile(String data, String filename) {
+    public static void writeToFile(List<SymbolEntry> symbolEntries, String filename) {
         try (FileOutputStream fos = new FileOutputStream(filename);
              ObjectOutputStream oos = new ObjectOutputStream(fos)) {
 
-            oos.writeObject(data);
-            System.out.println("Data written to file: " + data);
+            oos.writeObject(symbolEntries);
+            System.out.println("Data written to file: " + symbolEntries);
         } catch (IOException e) {
             e.fillInStackTrace();
         }
@@ -19,19 +20,22 @@ public class BinaryFile {
         try (FileInputStream fis = new FileInputStream(filename);
              ObjectInputStream ois = new ObjectInputStream(fis)) {
 
-            String data = (String) ois.readObject();
-            System.out.println("Data read from file: " + data);
+            List<SymbolEntry> symbolEntries = (List<SymbolEntry>) ois.readObject();
+
+            for (SymbolEntry entry : symbolEntries) {
+                System.out.println("Symbol: " + entry.getSymbol() + " Phrase(encrypted): " + entry.getEncryptedPhrase());
+            }
         } catch (IOException | ClassNotFoundException e) {
             e.fillInStackTrace();
         }
     }
 
-    public static void main(String[] args) {
-        String filename = "src/on_disk/secure.bin";
-
-        writeToFile("Testing again", filename);
-
-        readFromFile(filename);
-
-    }
+//    public static void main(String[] args) {
+//        String filename = "src/on_disk/secure.bin";
+//
+//        writeToFile("Testing again", filename);
+//
+//        readFromFile(filename);
+//
+//    }
 }
