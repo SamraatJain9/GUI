@@ -162,7 +162,7 @@ public class LoginWindow {
 
                             if (userInput.equals(decryptedPhrase)) {
                                 System.out.println("User Login Success");
-                                new Dashboard("User");
+                                new Dashboard();
                                 loginFrame.dispose(); // Close the login window
                             } else {
                                 JOptionPane.showMessageDialog(loginFrame, "Incorrect phrase. Please re-try.");
