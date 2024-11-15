@@ -3,6 +3,7 @@ package src;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 public class Dashboard {
     private JLabel label;
@@ -13,6 +14,10 @@ public class Dashboard {
     private String username = "";
 
     public Dashboard() {
+        List<SymbolEntry> symbolEntries = BinaryFile.readFromFile("src/on_disk/secure.bin");
+        if (!symbolEntries.isEmpty()) {
+            username = symbolEntries.get(0).getUsername();
+        }
         frame = new JFrame();
         frame.setTitle("Dashboard");
         label = new JLabel("Hello " + username);
@@ -73,6 +78,14 @@ public class Dashboard {
         if (newUsername != null && !newUsername.trim().isEmpty()) {
             username = newUsername.trim();
             label.setText("Hello " + username);
+
+            List<SymbolEntry> symbolEntries = BinaryFile.readFromFile("src/on_disk/secure.bin");
+            if (!symbolEntries.isEmpty()) {
+                for (SymbolEntry entry : symbolEntries) {
+                    entry.setUsername(username);
+                }
+                BinaryFile.writeToFile(symbolEntries, "src/on_disk/secure.bin");
+            }
         }
     }
 
