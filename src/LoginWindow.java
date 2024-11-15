@@ -61,11 +61,15 @@ public class LoginWindow {
         int result = JOptionPane.showConfirmDialog(frame, setupPanel, "Setup", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         if (result == JOptionPane.OK_OPTION) {
             int selectedCount = Integer.parseInt((String) Objects.requireNonNull(dropDown.getSelectedItem()));
-            showSymbolInputWindow(selectedCount);
+            String username = JOptionPane.showInputDialog(frame, "Enter your username: ");
+
+            if (username != null && !username.trim().isEmpty()) {
+                showSymbolInputWindow(selectedCount, username);
+            }
         }
     }
 
-    private void showSymbolInputWindow(int count) {
+    private void showSymbolInputWindow(int count, String username) {
         JFrame symbolFrame = new JFrame("Enter Phrases for Symbols");
         symbolFrame.setLayout(new GridLayout(count + 1, 2)); // +1 for the confirm button row
         symbolFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -100,7 +104,7 @@ public class LoginWindow {
                         // Encrypt the input phrase using the encrypt method
                         String encryptedPhrase = Encrypt.encrypt(inputPhrase, secretKey);
 
-                        symbolEntries.add(new SymbolEntry(symbol, encryptedPhrase, secretKey));
+                        symbolEntries.add(new SymbolEntry(symbol, encryptedPhrase, secretKey, username));
 
                         String decryptedPhrase = Encrypt.decrypt(encryptedPhrase, secretKey);
 
