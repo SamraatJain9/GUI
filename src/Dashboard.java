@@ -2,6 +2,7 @@ package src;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
 
 public class Dashboard {
     private JLabel label;
@@ -9,11 +10,12 @@ public class Dashboard {
     private JPanel panel;
     private JPanel settingsPanel;
     private JSplitPane splitPane;
+    private String username = "";
 
     public Dashboard() {
         frame = new JFrame();
         frame.setTitle("Dashboard");
-        label = new JLabel("Hello ");
+        label = new JLabel("Hello " + username);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
@@ -29,8 +31,25 @@ public class Dashboard {
         settingsPanel = new JPanel();
         settingsPanel.setLayout(new BoxLayout(settingsPanel, BoxLayout.Y_AXIS));
         settingsPanel.setBorder(BorderFactory.createTitledBorder("Settings"));
-        settingsPanel.add(new JLabel("Username"));
-        settingsPanel.add(new JLabel("Remember Login"));
+
+        JButton usernameLabel = new JButton("Username");
+        usernameLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        usernameLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                openUsernameDialog();
+            }
+        });
+
+        JButton rememberLoginLabel = new JButton("Remember Login");
+        rememberLoginLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+        settingsPanel.add(rememberLoginLabel);
+        settingsPanel.add(usernameLabel);
+
+        JButton closeSettings = new JButton("Close");
+        closeSettings.addActionListener(e -> toggleSettingsPanel());
+
+        settingsPanel.add(closeSettings);
         settingsPanel.setVisible(false);
 
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, panel, settingsPanel);
@@ -47,6 +66,14 @@ public class Dashboard {
         boolean isSettingsVisible = settingsPanel.isVisible();
         settingsPanel.setVisible(!isSettingsVisible);
         splitPane.setDividerLocation(isSettingsVisible ? 1.0 : 0.8);
+    }
+
+    public void openUsernameDialog() {
+        String newUsername = JOptionPane.showInputDialog(frame, "Enter your username: ", username);
+        if (newUsername != null && !newUsername.trim().isEmpty()) {
+            username = newUsername.trim();
+            label.setText("Hello " + username);
+        }
     }
 
 /*    public static void main(String[] args) {
