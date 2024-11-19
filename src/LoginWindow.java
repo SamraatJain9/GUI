@@ -172,7 +172,7 @@ public class LoginWindow {
                                 JOptionPane.showMessageDialog(loginFrame, "Incorrect phrase. Please re-try.");
                             }
                         } catch (Exception ex) {
-                            ex.printStackTrace();
+                            ex.fillInStackTrace();
                         }
                     });
 
@@ -185,12 +185,12 @@ public class LoginWindow {
                     loginFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
                 } catch (Exception ex) {
-                    ex.printStackTrace(); // Catch any issues with window creation
+                    ex.fillInStackTrace(); // Catch any issues with window creation
                 }
             });
 
         } catch (Exception ex) {
-            ex.printStackTrace(); // Catch any other exceptions
+            ex.fillInStackTrace(); // Catch any other exceptions
         }
     }
 
