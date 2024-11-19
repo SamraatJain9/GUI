@@ -5,6 +5,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -16,10 +20,14 @@ public class LoginWindow {
     private JFrame frame;
     private JPanel panel;
 
+    private String filePath = "src/on_disk/secure.bin";
+
+    boolean checkLogin = checkFileEmpty(filePath);
+
     public LoginWindow() {
         frame = new JFrame();
 
-        label = new JLabel("Hello There");
+        label = new JLabel("Login/Setup Page");
         JButton setupButton = new JButton("Start Setup");
         JButton loginButton = new JButton("Login");
         setupButton.addActionListener(e -> setupLogin());
@@ -31,6 +39,16 @@ public class LoginWindow {
         panel.add(label);
         panel.add(setupButton);
         panel.add(loginButton);
+
+//        if (!checkLogin) {
+//            System.out.println("No Login");
+//            setupButton.setVisible(true);
+//            loginButton.setVisible(false);
+//        } else {
+//            System.out.println("Login exists");
+//            setupButton.setVisible(false);
+//            loginButton.setVisible(true);
+//        }
 
         frame.add(panel, BorderLayout.CENTER);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -137,7 +155,7 @@ public class LoginWindow {
 
             // Check if the list is empty or null
             if (symbolEntries == null || symbolEntries.isEmpty()) {
-                JOptionPane.showMessageDialog(frame, "No Symbols available. Please complete setup first.");
+                JOptionPane.showMessageDialog(frame, "Please complete setup first.");
                 return;
             }
 
@@ -191,6 +209,27 @@ public class LoginWindow {
 
         } catch (Exception ex) {
             ex.fillInStackTrace(); // Catch any other exceptions
+        }
+    }
+
+    public static boolean checkFileEmpty(String filePath) {
+        File file = new File(filePath);
+
+        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+            FileChannel fileChannel = fileInputStream.getChannel();
+
+            long fileSize = fileChannel.size();
+
+            if (fileSize == 0 || !file.exists()){
+                System.out.println("No Login, file is empty");
+                return true;
+            } else {
+                System.out.println("File is not empty");
+                return false;
+            }
+        } catch (IOException e) {
+            e.fillInStackTrace();
+            return false;
         }
     }
 
