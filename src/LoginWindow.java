@@ -16,8 +16,10 @@ import java.util.Objects;
 public class LoginWindow {
 
     private JLabel label;
-    private JButton button;
+    private JButton setupButton;
+    private JButton loginButton;
     private JFrame frame;
+    private JFrame loginFrame;
     private JPanel panel;
 
     private String filePath = "src/on_disk/secure.bin";
@@ -28,8 +30,8 @@ public class LoginWindow {
         frame = new JFrame();
 
         label = new JLabel("Login/Setup Page");
-        JButton setupButton = new JButton("Start Setup");
-        JButton loginButton = new JButton("Login");
+        setupButton = new JButton("Start Setup");
+        loginButton = new JButton("Login");
         setupButton.addActionListener(e -> setupLogin());
         loginButton.addActionListener(e -> loginUser());
 
@@ -40,19 +42,11 @@ public class LoginWindow {
         panel.add(setupButton);
         panel.add(loginButton);
 
-//        if (!checkLogin) {
-//            System.out.println("No Login");
-//            setupButton.setVisible(true);
-//            loginButton.setVisible(false);
-//        } else {
-//            System.out.println("Login exists");
-//            setupButton.setVisible(false);
-//            loginButton.setVisible(true);
-//        }
+        updateButtonVisibility();
 
         frame.add(panel, BorderLayout.CENTER);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setTitle("Login Window");
+        frame.setTitle("Setup/Login Window");
         frame.pack();
         frame.setVisible(true);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -60,6 +54,16 @@ public class LoginWindow {
 
     public static void main(String[] args) {
         new LoginWindow();
+    }
+
+    private void updateButtonVisibility() {
+        boolean fileEmpty = checkFileEmpty(filePath);
+
+        setupButton.setVisible(fileEmpty);
+        loginButton.setVisible(!fileEmpty);
+
+        panel.revalidate();
+        panel.repaint();
     }
 
     // Refactored method name from actionPerformed to setupLogin
@@ -136,6 +140,11 @@ public class LoginWindow {
                     BinaryFile.readFromFile("src/on_disk/secure.bin");
 
                     symbolFrame.dispose(); // Close the frame after confirmation
+
+                    frame.dispose();
+                    System.out.println("Setup Complete. Navigating to Dashboard");
+
+                    SwingUtilities.invokeLater(Dashboard::new);
                 } catch (Exception ex) {
                     ex.fillInStackTrace(); // Print any encryption errors
                 }
@@ -168,7 +177,7 @@ public class LoginWindow {
             // Create and display the login frame
             SwingUtilities.invokeLater(() -> {
                 try {
-                    JFrame loginFrame = new JFrame("Login - Enter Phrase");
+                    loginFrame = new JFrame("Login - Enter Phrase");
                     loginFrame.setLayout(new GridLayout(2, 1));
 
                     JLabel symbolLabel = new JLabel(symbol, SwingConstants.CENTER);
@@ -215,12 +224,16 @@ public class LoginWindow {
     public static boolean checkFileEmpty(String filePath) {
         File file = new File(filePath);
 
+        if (!file.exists()) {
+            System.out.println("File does not Exist");
+            return true;
+        }
+
         try (FileInputStream fileInputStream = new FileInputStream(file)) {
             FileChannel fileChannel = fileInputStream.getChannel();
-
             long fileSize = fileChannel.size();
 
-            if (fileSize == 0 || !file.exists()){
+            if (fileSize == 0){
                 System.out.println("No Login, file is empty");
                 return true;
             } else {
@@ -229,7 +242,7 @@ public class LoginWindow {
             }
         } catch (IOException e) {
             e.fillInStackTrace();
-            return false;
+            return true;
         }
     }
 
