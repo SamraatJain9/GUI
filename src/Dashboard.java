@@ -2,6 +2,7 @@ package src;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
@@ -12,6 +13,8 @@ public class Dashboard {
     private JPanel settingsPanel;
     private JSplitPane splitPane;
     private String username = "";
+    private JCheckBox rememberLoginBox;
+    public boolean rememberUserLogin = false;
 
     public Dashboard() {
         List<SymbolEntry> symbolEntries = BinaryFile.readFromFile("src/on_disk/secure.bin");
@@ -45,10 +48,12 @@ public class Dashboard {
             }
         });
 
-        JButton rememberLoginLabel = new JButton("Remember Login");
-        rememberLoginLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        rememberLoginBox = new JCheckBox("Remember Login");
+        rememberLoginBox.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        rememberLoginBox.setBounds(100, 150, 50, 50);
+        rememberLoginBox.addActionListener(e -> checkBoxMarked(rememberUserLogin));
 
-        settingsPanel.add(rememberLoginLabel);
+        settingsPanel.add(rememberLoginBox);
         settingsPanel.add(usernameLabel);
 
         JButton closeSettings = new JButton("Close");
@@ -86,6 +91,19 @@ public class Dashboard {
                 }
                 BinaryFile.writeToFile(symbolEntries, "src/on_disk/secure.bin");
             }
+        }
+    }
+
+    public void checkBoxMarked(boolean rememberUserLogin) {
+        System.out.println("Initial User Login is: " + rememberUserLogin);
+        if (rememberLoginBox.isSelected()) {
+            rememberUserLogin = true;
+            System.out.println("Remember User Login");
+            System.out.println(rememberUserLogin);
+        } else if (!rememberLoginBox.isSelected()) {
+            rememberUserLogin = false;
+            System.out.println("Don't remember User Login");
+            System.out.println(rememberUserLogin);
         }
     }
 
