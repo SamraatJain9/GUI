@@ -159,6 +159,13 @@ public class LoginWindow {
 
     public void loginUser() {
         try {
+            boolean rememberLoginState = RememberLoginHandler.loadRememberLoginState();
+            if (rememberLoginState) {
+                System.out.println("Auto-Login Enabled. Navigating to Dashboard");
+                new Dashboard();
+                frame.dispose();
+                return;
+            }
             // Read symbol entries from file
             List<SymbolEntry> symbolEntries = BinaryFile.readFromFile("src/on_disk/secure.bin");
 

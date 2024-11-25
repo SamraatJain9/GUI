@@ -95,16 +95,9 @@ public class Dashboard {
     }
 
     public void checkBoxMarked(boolean rememberUserLogin) {
-        System.out.println("Initial User Login is: " + rememberUserLogin);
-        if (rememberLoginBox.isSelected()) {
-            rememberUserLogin = true;
-            System.out.println("Remember User Login");
-            System.out.println(rememberUserLogin);
-        } else if (!rememberLoginBox.isSelected()) {
-            rememberUserLogin = false;
-            System.out.println("Don't remember User Login");
-            System.out.println(rememberUserLogin);
-        }
+        this.rememberUserLogin = rememberLoginBox.isSelected();
+        System.out.println("Remember User Login: " + rememberUserLogin);
+        RememberLoginHandler.saveRememberLoginState(this.rememberUserLogin);
     }
 
 /*    public static void main(String[] args) {
