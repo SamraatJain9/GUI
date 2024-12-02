@@ -9,6 +9,7 @@ public class NewFolder {
     }
 
     public void showCreateFolderDialog() {
-        JOptionPane.showMessageDialog(null, "Create Folder", "New Folder", JOptionPane.INFORMATION_MESSAGE);
+        String title = JOptionPane.showInputDialog("Create New Folder");
+        JOptionPane.showMessageDialog(null, "Create Folder " + title + "!");
     }
 }

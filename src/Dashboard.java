@@ -104,7 +104,7 @@ public class Dashboard {
     }
 
     public void openCreateFolder() {
-        NewFolder newFolder = new NewFolder();
+        new NewFolder();
     }
 
 /*    public static void main(String[] args) {
