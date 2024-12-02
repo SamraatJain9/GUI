@@ -25,7 +25,9 @@ public class Dashboard {
         frame.setTitle("Dashboard");
         label = new JLabel("Hello " + username);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+
+        JButton createFolderButton = new JButton("Create Folder");
+        createFolderButton.addActionListener(e -> openCreateFolder());
 
         JButton settingsButton = new JButton("Settings");
         settingsButton.addActionListener(e -> toggleSettingsPanel());
@@ -34,6 +36,7 @@ public class Dashboard {
         panel.setBorder(BorderFactory.createEmptyBorder(30, 30, 10, 30));
         panel.setLayout(new GridLayout(0, 1));
         panel.add(label);
+        panel.add(createFolderButton);
         panel.add(settingsButton);
 
         settingsPanel = new JPanel();
@@ -68,8 +71,8 @@ public class Dashboard {
 
         frame.add(splitPane, BorderLayout.CENTER);
         frame.pack();
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.setVisible(true);
-
     }
 
     public void toggleSettingsPanel() {
@@ -98,6 +101,10 @@ public class Dashboard {
         this.rememberUserLogin = rememberLoginBox.isSelected();
         System.out.println("Remember User Login: " + rememberUserLogin);
         RememberLoginHandler.saveRememberLoginState(this.rememberUserLogin);
+    }
+
+    public void openCreateFolder() {
+        NewFolder newFolder = new NewFolder();
     }
 
 /*    public static void main(String[] args) {
